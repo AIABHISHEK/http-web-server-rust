@@ -33,7 +33,7 @@ fn handle_connection(mut stream: TcpStream) {
         .collect();
     println!("Request: {http_request:#?}");
     let request_line: Vec<&str> = http_request.get(0).unwrap().split(" ").collect();
-    if request_line[0] == "/" {
+    if request_line[1] == "/" {
         let response = "HTTP/1.1 200 OK\r\n\r\n";
         stream.write_all(response.as_bytes()).unwrap();
     }
