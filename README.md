@@ -36,3 +36,9 @@ Note: This section is for stages 2 and beyond.
    the first time you run it. Subsequent runs will be fast.
 1. Commit your changes and run `git push origin master` to submit your solution
    to CodeCrafters. Test output will be streamed to your terminal.
+
+
+## Ref links:
+- [Rust TCP server example](https://doc.rust-lang.org/std/net/struct.TcpListener.html)
+- [HTTP specs](https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html)
+- [message format](https://datatracker.ietf.org/doc/html/rfc9112#name-message)
