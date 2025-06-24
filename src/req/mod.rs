@@ -22,4 +22,8 @@ impl HttpRequest {
             stream: stream,
         }
     }
+
+    pub fn get_header(&self, key: &str) -> Option<String> {
+        self.headers.get(key).map(|v| v.to_string())
+    }
 }

@@ -17,6 +17,18 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
             headers.insert("Content-Type".to_string(), "text/plain".to_string());
             res.send(body, Some(headers), StatusCode::Ok);
         }
+        "/user-agent" => {
+            let user_agent = req.get_header("User-Agent");
+            match user_agent {
+                Some(r) => {
+                    let body = Some(Vec::from(r.as_bytes()));
+                    res.send(body, None, StatusCode::Ok);
+                }
+                None => {
+                    res.send(None, None, StatusCode::NotFound);
+                }
+            }
+        }
         _ => {
             let response = "HTTP/1.1 404 Not Found\r\n\r\n";
             req.stream.write_all(response.as_bytes()).unwrap();
