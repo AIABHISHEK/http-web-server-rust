@@ -13,9 +13,7 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
         path if path.starts_with("/echo/") => {
             let id = &path["/echo/".len()..];
             let body = Some(Vec::from(id.to_string().as_bytes()));
-            let mut headers = HashMap::new();
-            headers.insert("Content-Type".to_string(), "text/plain".to_string());
-            res.send(body, Some(headers), StatusCode::Ok);
+            res.send(body, None, StatusCode::Ok);
         }
         "/user-agent" => {
             let user_agent = req.get_header("User-Agent");

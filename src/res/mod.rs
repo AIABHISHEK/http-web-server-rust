@@ -26,6 +26,7 @@ impl HttpResponse {
 
     pub fn send(&mut self, body: Option<Vec<u8>>, headers: Option<HashMap<String, String>>, status_code: StatusCode) {
         let mut response = format!("HTTP/1.1 {} {}\r\n", status_code.as_u16(), status_code.reason_phrase());
+        
         match headers {
             Some(r) => {
                 for v in r {
@@ -33,6 +34,12 @@ impl HttpResponse {
                 }
             }
             None => {}
+        }
+        // add default headers
+        let mut default_headers = HashMap::new();
+        default_headers.insert("Content-Type".to_string(), "text/plain".to_string());
+        for v in default_headers {
+            response.push_str(format!("{}: {}\r\n", v.0, v.1).as_str());
         }
         let body_len = body.as_ref().map(|b| b.len()).unwrap_or(0);
         // headers.insert("Content-Length".to_string(), body_len.to_string());
