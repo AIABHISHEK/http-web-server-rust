@@ -12,9 +12,9 @@ use crate::util::parse_incoming_req;
 
 pub fn start_tcp() {
     let listener = TcpListener::bind("127.0.0.1:4221").unwrap();
-    print!("1  ");
+    // print!("1  ");
     for stream in listener.incoming() {
-        print!("2  ");
+        // print!("2  ");
         match stream {
             Ok(_stream) => {
                 handle_connection(_stream);

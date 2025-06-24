@@ -5,7 +5,7 @@ use crate::lib::StatusCode;
 use crate::req::HttpRequest;
 use crate::res::HttpResponse;
 pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
-    print!("{}", req.target);
+    // print!("{}", req.target);
     match req.target.as_str() {
         "/" => {
             res.send(None, None, StatusCode::Ok);
