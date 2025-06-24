@@ -18,7 +18,7 @@ pub fn start_tcp() {
         match stream {
             Ok(_stream) => {
                 handle_connection(_stream);
-                println!("accepted new connection");
+                // println!("accepted new connection");
             }
             Err(e) => {
                 println!("error: {}", e);

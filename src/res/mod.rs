@@ -34,6 +34,9 @@ impl HttpResponse {
             }
             None => {}
         }
+        let body_len = body.as_ref().map(|b| b.len()).unwrap_or(0);
+        // headers.insert("Content-Length".to_string(), body_len.to_string());
+        response.push_str(format!("Content-Length: {}\r\n", body_len).as_str());
         response.push_str("\r\n");
         let mut response = response.as_bytes().to_vec();
         if let Some(r) = body {
