@@ -56,7 +56,13 @@ impl HttpResponse {
                     response.push_str(format!("{}: {}\r\n", v.0, v.1).as_str());
                 }
             }
-            None => {}
+            None => {
+                let mut default_headers = HashMap::new();
+                default_headers.insert("Content-Type".to_string(), "text/plain".to_string());
+                for v in default_headers {
+                    response.push_str(format!("{}: {}\r\n", v.0, v.1).as_str());
+                }
+            }
         }
         // add default headers
 
