@@ -1,5 +1,9 @@
 use std::collections::HashMap;
+use std::io::{BufReader, Read};
 use std::{io::Write, net::TcpStream};
+use std::fs;
+
+use anyhow::Ok;
 
 use crate::lib::StatusCode;
 use crate::req::HttpRequest;
@@ -27,9 +31,18 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
                 }
             }
         }
+        path if path.starts_with("/files/") => {
+            let file_path = &path["/files/".len()..path.len()];
+            let file = fs::File::open(file_path);
+            let mut reader = BufReader::new(file.unwrap());
+            let mut body = String::new();
+            if let Err(e) = reader.read_to_string(&mut body) {
+                res.send(None, None, StatusCode::NotFound);
+            }
+            res.send(Some(body.as_bytes().to_vec()), None, StatusCode::Ok);
+        }
         _ => {
-            let response = "HTTP/1.1 404 Not Found\r\n\r\n";
-            req.stream.write_all(response.as_bytes()).unwrap();
+            res.send(None, None, StatusCode::NotFound);
         }
     }
 }
