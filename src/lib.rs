@@ -57,3 +57,25 @@ impl StatusCode {
         }
     }
 }
+
+pub enum ContentEncodingType {
+    GZIP,
+}
+
+impl ContentEncodingType {
+    pub fn from_string(s: String) -> Option<ContentEncodingType> {
+        match s.to_uppercase().as_str() {
+            "GZIP" => {
+                Some(ContentEncodingType::GZIP)
+            }
+            _ => { None }
+        }
+    }
+
+    pub fn as_string(&self) -> Option<String> {
+        match self {
+            ContentEncodingType::GZIP => Some("gzip".to_string()),
+            _ => { None }
+        }
+    }
+}
