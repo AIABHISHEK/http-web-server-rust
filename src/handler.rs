@@ -59,7 +59,9 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
                     if let Err(e) = reader.read_to_string(&mut body) {
                         res.send(None, None, StatusCode::NotFound);
                     }
-                    res.send(Some(body.as_bytes().to_vec()), None, StatusCode::Ok);
+                    let mut headers: HashMap<String, String> = HashMap::new();
+                    headers.insert("Content-Type".to_string(), "application/octet-stream".to_string())
+                    res.send(Some(body.as_bytes().to_vec()), Some(headers), StatusCode::Ok);
                 }
                 _ => {
                     res.send(None, None, StatusCode::NotFound);
