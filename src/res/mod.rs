@@ -81,8 +81,11 @@ impl HttpResponse {
             if let Ok( compressed) = encoder.finish() {
                 res_body = compressed;
             } else {
-                res_body = if let Some(b) = body { b } else { Vec::new() }
+                res_body = body.unwrap();
             }
+        }
+        else {
+            res_body = if let Some(b) = body { b } else { Vec::new() }
         }
 
         let body_len = res_body.len();
