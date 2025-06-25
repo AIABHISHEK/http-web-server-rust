@@ -22,6 +22,15 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
             if req.headers.get("Accept-Encoding") == Some(&"gzip".to_string()) {
                 headers.insert("Content-Encoding".to_string(), "gzip".to_string());
             }
+            match req.headers.get("Accept-Encoding") {
+                Some(r) => {
+                    let encode_accepted = r.split(", ").into_iter().any(|v| v == "gzip");
+                    if encode_accepted {
+                        headers.insert("Content-Encoding".to_string(), "gzip".to_string());
+                    }
+                }
+                None => {}
+            }
             res.send(body, Some(headers), StatusCode::Ok);
         }
         "/user-agent" => {
