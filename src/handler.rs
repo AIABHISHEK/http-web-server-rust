@@ -60,7 +60,7 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
                         res.send(None, None, StatusCode::NotFound);
                     }
                     let mut headers: HashMap<String, String> = HashMap::new();
-                    headers.insert("Content-Type".to_string(), "application/octet-stream".to_string())
+                    headers.insert("Content-Type".to_string(), "application/octet-stream".to_string());
                     res.send(Some(body.as_bytes().to_vec()), Some(headers), StatusCode::Ok);
                 }
                 _ => {

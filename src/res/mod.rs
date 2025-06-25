@@ -46,7 +46,7 @@ impl HttpResponse {
         );
 
         match headers {
-            Some(r) => {
+            Some(mut r) => {
                 let mut default_headers = HashMap::new();
                 default_headers.insert("Content-Type".to_string(), "text/plain".to_string());
                 for v in default_headers {
@@ -60,9 +60,6 @@ impl HttpResponse {
         }
         // add default headers
 
-        for v in default_headers {
-            response.push_str(format!("{}: {}\r\n", v.0, v.1).as_str());
-        }
         let body_len = body.as_ref().map(|b| b.len()).unwrap_or(0);
         // headers.insert("Content-Length".to_string(), body_len.to_string());
         response.push_str(format!("Content-Length: {}\r\n", body_len).as_str());
