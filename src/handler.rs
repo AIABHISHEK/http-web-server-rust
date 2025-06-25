@@ -1,9 +1,8 @@
 use std::collections::HashMap;
-use std::fs::OpenOptions;
 use std::{env, fs};
 use std::io::{BufReader, Read};
-use std::path::{Path, PathBuf};
-use std::{io::Write, net::TcpStream};
+use std::path;
+use std::{io::Write};
 
 
 use crate::lib::{HttpMethod, StatusCode};
@@ -11,7 +10,6 @@ use crate::req::HttpRequest;
 use crate::res::HttpResponse;
 use crate::util::get_directory;
 pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
-    // println!("wahdhjadhwa heloo handler  bfhwbhfah");
     // println!("{}", req.target);
     match req.target.as_str() {
         "/" => {
@@ -35,14 +33,10 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
             }
         }
         path if path.starts_with("/files/") => {
-            // println!("before get dire");
             let mut dir = get_directory();
-            // println!("after get dir");
             let file_path = &path["/files/".len()..path.len()];
             let file_path = dir.join(file_path);
-            // let file_path = file_path.join(file_path);
             // println!("{:?}", file_path);
-            // print!("whwhjhdhwj");
             match req.method {
                 HttpMethod::GET => {
                     let file = fs::File::open(file_path);
@@ -66,18 +60,13 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
                     let file = fs::File::create(file_path);
                     match file {
                         Ok(mut f) => {
-                            let data = req.body.clone().concat();
-                            let data = data.as_bytes();
-                            let write_to = f.write_all(&data);
-                            
-                            // let f = f.try_clone();
+                            let data = &req.body;
+                            let write_to = f.write_all(data);
                             match write_to {
                                 Ok(()) => {
                                     res.send(None, None, StatusCode::Created);
                                 }
-                                _ => { 
-                                    println!("not foiund 1");
-                                    res.send(None, None, StatusCode::InternalServerError); }
+                                _ => { res.send(None, None, StatusCode::InternalServerError); }
                             }
                         }
                         _ => {
@@ -89,7 +78,6 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
             }
         }
         _ => {
-            print!("not found");
             res.send(None, None, StatusCode::NotFound);
         }
     }

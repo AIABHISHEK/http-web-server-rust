@@ -12,7 +12,7 @@ pub fn parse_incoming_req(mut stream: TcpStream) -> HttpRequest {
     let mut buf_reader = BufReader::new(&mut stream);
     let mut request_line = Vec::new();
     let mut headers: HashMap<String, String> = HashMap::new();
-    let mut body: Vec<String> = Vec::new();
+    let mut body: Vec<u8> = Vec::new();
     let mut is_header_complete = false;
     for line in buf_reader.by_ref().lines() {
         match line {
@@ -46,6 +46,7 @@ pub fn parse_incoming_req(mut stream: TcpStream) -> HttpRequest {
         if let Ok(len) = cl.parse::<usize>() {
             let mut buf = vec![0; len];
             buf_reader.read_exact(&mut buf).unwrap();
+            body = buf.iter().map(|&b| b.clone() as u8).collect();
             // let b:Vec<char> = buf.iter().map(|&b| b.clone() as char).collect();
         }
     }
