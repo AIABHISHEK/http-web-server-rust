@@ -18,6 +18,7 @@ pub fn start_tcp() {
         match stream {
             Ok(_stream) => {
                 pool.execute(|| handle_connection(_stream));
+                // handle_connection(_stream);
             }
             Err(e) => {
                 println!("error: {}", e);
@@ -27,6 +28,7 @@ pub fn start_tcp() {
 }
 
 fn handle_connection(stream: TcpStream) {
+    // println!("hjdhahdahhawdwajd");
     let res_stream = stream.try_clone().expect("failed stream cloning");
     let mut req = parse_incoming_req(stream);
     let req_headers = req.headers.clone();

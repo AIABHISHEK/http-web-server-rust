@@ -1,4 +1,10 @@
-use std::{collections::HashMap, io::{BufRead, BufReader, Read}, net::TcpStream};
+use std::{
+    collections::HashMap,
+    env,
+    io::{BufRead, BufReader, Read},
+    net::TcpStream,
+    path::PathBuf,
+};
 
 use crate::{lib::HttpMethod, req::HttpRequest};
 
@@ -17,9 +23,10 @@ pub fn parse_incoming_req(mut stream: TcpStream) -> HttpRequest {
                 }
                 if request_line.is_empty() {
                     request_line = r.split(' ').map(|v| v.to_string()).collect();
-                }
-                else if !is_header_complete  {
-                    let v = r.split_once(": ").map(|val| (val.0.to_string(), val.1.to_string()));
+                } else if !is_header_complete {
+                    let v = r
+                        .split_once(": ")
+                        .map(|val| (val.0.to_string(), val.1.to_string()));
                     if let Some(r) = v {
                         headers.insert(r.0, r.1);
                     }
@@ -51,6 +58,23 @@ pub fn parse_incoming_req(mut stream: TcpStream) -> HttpRequest {
     return req;
 }
 
-pub fn build_response() {
+pub fn build_response() {}
 
+pub fn get_directory() -> PathBuf {
+    let mut args = env::args();
+    let mut directory = None;
+    while let Some(arg) = args.next() {
+        if arg == "--directory" {
+            if let Some(path_str) = args.next() {
+                directory = Some(PathBuf::from(path_str));
+            } else {
+                eprintln!("Error: --directory requires a path");
+                std::process::exit(1);
+            }
+            break;
+        }
+    }
+    // let base_dir = Arc
+    let dir = directory.expect("Missing --directory argument");
+    return dir;
 }
