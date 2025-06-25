@@ -1,6 +1,7 @@
 use std::collections::HashMap;
-use std::fs;
+use std::{env, fs};
 use std::io::{BufReader, Read};
+use std::path::PathBuf;
 use std::{io::Write, net::TcpStream};
 
 use crate::lib::StatusCode;
@@ -30,7 +31,26 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
             }
         }
         path if path.starts_with("/files/") => {
+            let mut args = env::args(); // skip program name
+            
+            let mut directory = None;
+            
+            while let Some(arg) = args.next() {
+                if arg == "--directory" {
+                    if let Some(path_str) = args.next() {
+                        directory = Some(PathBuf::from(path_str));
+                    } else {
+                        eprintln!("Error: --directory requires a path");
+                        std::process::exit(1);
+                    }
+                    break;
+                }
+            }
+            // let base_dir = Arc
+            let dir = directory.expect("Missing --directory argument");
             let file_path = &path["/files/".len()..path.len()];
+            let file_path = dir.as_path().join(file_path);
+            // println!("Using directory: {:?}", dir);
             let file = fs::File::open(file_path);
             match file {
                 Ok(f) => {
@@ -41,7 +61,9 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
                     }
                     res.send(Some(body.as_bytes().to_vec()), None, StatusCode::Ok);
                 }
-                _ => { res.send(None, None, StatusCode::NotFound); }
+                _ => {
+                    res.send(None, None, StatusCode::NotFound);
+                }
             }
         }
         _ => {
