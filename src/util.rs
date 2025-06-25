@@ -49,6 +49,7 @@ pub fn parse_incoming_req(mut stream: TcpStream) -> HttpRequest {
             // let b:Vec<char> = buf.iter().map(|&b| b.clone() as char).collect();
         }
     }
+    println!("end of parsing");
 
     let method = HttpMethod::from_string(&request_line[0]).unwrap_or(HttpMethod::GET);
     let target = request_line[1].clone();

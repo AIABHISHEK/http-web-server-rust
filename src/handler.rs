@@ -11,7 +11,8 @@ use crate::req::HttpRequest;
 use crate::res::HttpResponse;
 use crate::util::get_directory;
 pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
-    print!("{}", req.target);
+    // println!("wahdhjadhwa heloo handler  bfhwbhfah");
+    // println!("{}", req.target);
     match req.target.as_str() {
         "/" => {
             res.send(None, None, StatusCode::Ok);
@@ -34,10 +35,13 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
             }
         }
         path if path.starts_with("/files/") => {
-            let dir = get_directory();
+            // println!("before get dire");
+            let mut dir = get_directory();
+            // println!("after get dir");
             let file_path = &path["/files/".len()..path.len()];
-            let file_path = dir.as_path().join(Path::new(file_path));
-            print!("{:?}", file_path);
+            let file_path = dir.join(file_path);
+            // let file_path = file_path.join(file_path);
+            // println!("{:?}", file_path);
             // print!("whwhjhdhwj");
             match req.method {
                 HttpMethod::GET => {
@@ -59,19 +63,21 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
                     }
                 }
                 HttpMethod::POST => {
-
                     let file = fs::File::create(file_path);
                     match file {
                         Ok(mut f) => {
                             let data = req.body.clone().concat();
                             let data = data.as_bytes();
                             let write_to = f.write_all(&data);
+                            
                             // let f = f.try_clone();
                             match write_to {
                                 Ok(()) => {
                                     res.send(None, None, StatusCode::Created);
                                 }
-                                _ => { res.send(None, None, StatusCode::InternalServerError); }
+                                _ => { 
+                                    println!("not foiund 1");
+                                    res.send(None, None, StatusCode::InternalServerError); }
                             }
                         }
                         _ => {
