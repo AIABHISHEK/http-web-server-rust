@@ -28,12 +28,22 @@ pub fn start_tcp() {
 }
 
 fn handle_connection(stream: TcpStream) {
-    let res_stream = stream.try_clone().expect("failed stream cloning");
-    let mut req = parse_incoming_req(stream);
-    let req_headers = req.headers.clone();
-    let mut res = HttpResponse::new(StatusCode::Ok, req_headers, None, res_stream);
-    // println!("hjdhahdahhawdwajd");
 
-    route_handler(&mut req, &mut res);
-
+    // let res_stream = stream.try_clone().expect("failed stream cloning");
+    loop {
+        let req_stream = stream.try_clone().expect("failed stream cloning");
+        let res_stream = stream.try_clone().expect("failed stream cloning");
+        match parse_incoming_req(req_stream) {
+            Ok(r) => {
+                let mut req: req::HttpRequest = r;
+                let req_headers = req.headers.clone();
+                let mut res = HttpResponse::new(StatusCode::Ok, req_headers, None, res_stream);
+                // println!("hjdhahdahhawdwajd");
+                route_handler(&mut req, &mut res);
+            }
+            Err(e) => {
+                break;
+            }
+        }
+    }
 }

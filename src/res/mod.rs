@@ -58,6 +58,7 @@ impl HttpResponse {
                 }
                 let mut default_headers = HashMap::new();
                 default_headers.insert("Content-Type".to_string(), "text/plain".to_string());
+                default_headers.insert("Connection".to_string(), "keep-alive".to_string());
                 for v in default_headers {
                     r.entry(v.0).or_insert(v.1);
                 }

@@ -1,14 +1,12 @@
 use std::{
-    collections::HashMap,
-    env,
-    io::{BufRead, BufReader, Read},
-    net::TcpStream,
-    path::PathBuf,
+    collections::HashMap, env, f32::consts::E, io::{BufRead, BufReader, Read}, net::TcpStream, path::PathBuf
 };
 
-use crate::{lib::HttpMethod, req::HttpRequest};
+use anyhow::{anyhow, Error};
 
-pub fn parse_incoming_req(mut stream: TcpStream) -> HttpRequest {
+use crate::{lib::HttpMethod, req::{self, HttpRequest}};
+
+pub fn parse_incoming_req(mut stream: TcpStream) -> Result<HttpRequest, Error> {
     let mut buf_reader = BufReader::new(&mut stream);
     let mut request_line = Vec::new();
     let mut headers: HashMap<String, String> = HashMap::new();
@@ -31,14 +29,11 @@ pub fn parse_incoming_req(mut stream: TcpStream) -> HttpRequest {
                         headers.insert(r.0, r.1);
                     }
                 }
-                // else {
-                //     if let Some(cl) = headers.get("Content-Length") {
-                //         body.push(r);
-                //     }
-                //     body.push(r);
-                // }
+
             }
-            Err(e) => {}
+            Err(e) => {
+                return Err(anyhow!("Failed to parse "));
+            }
         }
     }
 
@@ -51,13 +46,15 @@ pub fn parse_incoming_req(mut stream: TcpStream) -> HttpRequest {
         }
     }
     println!("end of parsing");
-
+    if request_line.is_empty() {
+        return Err(anyhow!("Invalid request"));
+    }
     let method = HttpMethod::from_string(&request_line[0]).unwrap_or(HttpMethod::GET);
     let target = request_line[1].clone();
     let http_version = request_line[2].clone();
     let req = HttpRequest::new(method, target, http_version, headers, body, stream);
     // return true;
-    return req;
+    return Ok(req);
 }
 
 pub fn build_response() {}
