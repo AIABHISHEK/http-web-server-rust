@@ -41,7 +41,7 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
             match user_agent {
                 Some(r) => {
                     let body = Some(Vec::from(r.as_bytes()));
-                    res.send(body, None, StatusCode::Ok);
+                    res.send(body, Some(headers), StatusCode::Ok);
                 }
                 None => {
                     res.send(None, None, StatusCode::NotFound);
@@ -87,15 +87,15 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
                             let write_to = f.write_all(data);
                             match write_to {
                                 Ok(()) => {
-                                    res.send(None, None, StatusCode::Created);
+                                    res.send(None, Some(headers), StatusCode::Created);
                                 }
                                 _ => {
-                                    res.send(None, None, StatusCode::InternalServerError);
+                                    res.send(None, Some(headers), StatusCode::InternalServerError);
                                 }
                             }
                         }
                         _ => {
-                            res.send(None, None, StatusCode::NotFound);
+                            res.send(None, Some(headers), StatusCode::NotFound);
                         }
                     }
                 }
@@ -103,7 +103,7 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
             }
         }
         _ => {
-            res.send(None, None, StatusCode::NotFound);
+            res.send(None, Some(headers), StatusCode::NotFound);
         }
     }
 }
