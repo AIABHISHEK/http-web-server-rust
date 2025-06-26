@@ -1,9 +1,8 @@
 use std::collections::HashMap;
-use std::{env, fs};
+use std::io::Write;
 use std::io::{BufReader, Read};
 use std::path;
-use std::{io::Write};
-
+use std::{env, fs};
 
 use crate::lib::{HttpMethod, StatusCode};
 use crate::req::HttpRequest;
@@ -11,6 +10,22 @@ use crate::res::HttpResponse;
 use crate::util::get_directory;
 pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
     // println!("{}", req.target);
+    let mut headers = HashMap::new();
+    if req.headers.get("Accept-Encoding") == Some(&"gzip".to_string()) {
+        headers.insert("Content-Encoding".to_string(), "gzip".to_string());
+    }
+    match req.headers.get("Accept-Encoding") {
+        Some(r) => {
+            let encode_accepted = r.split(", ").into_iter().any(|v| v == "gzip");
+            if encode_accepted {
+                headers.insert("Content-Encoding".to_string(), "gzip".to_string());
+            }
+        }
+        None => {}
+    }
+    if req.headers.contains_key("Connection") {
+        headers.insert("Connection".to_string(), req.headers.get("Connection").unwrap().to_string());
+    }
     match req.target.as_str() {
         "/" => {
             res.send(None, None, StatusCode::Ok);
@@ -18,19 +33,7 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
         path if path.starts_with("/echo/") => {
             let id = &path["/echo/".len()..];
             let body = Some(Vec::from(id.to_string().as_bytes()));
-            let mut headers = HashMap::new();
-            if req.headers.get("Accept-Encoding") == Some(&"gzip".to_string()) {
-                headers.insert("Content-Encoding".to_string(), "gzip".to_string());
-            }
-            match req.headers.get("Accept-Encoding") {
-                Some(r) => {
-                    let encode_accepted = r.split(", ").into_iter().any(|v| v == "gzip");
-                    if encode_accepted {
-                        headers.insert("Content-Encoding".to_string(), "gzip".to_string());
-                    }
-                }
-                None => {}
-            }
+
             res.send(body, Some(headers), StatusCode::Ok);
         }
         "/user-agent" => {
@@ -61,8 +64,15 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
                                 res.send(None, None, StatusCode::NotFound);
                             }
                             let mut headers: HashMap<String, String> = HashMap::new();
-                            headers.insert("Content-Type".to_string(), "application/octet-stream".to_string());
-                            res.send(Some(body.as_bytes().to_vec()), Some(headers), StatusCode::Ok);
+                            headers.insert(
+                                "Content-Type".to_string(),
+                                "application/octet-stream".to_string(),
+                            );
+                            res.send(
+                                Some(body.as_bytes().to_vec()),
+                                Some(headers),
+                                StatusCode::Ok,
+                            );
                         }
                         _ => {
                             res.send(None, None, StatusCode::NotFound);
@@ -79,7 +89,9 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
                                 Ok(()) => {
                                     res.send(None, None, StatusCode::Created);
                                 }
-                                _ => { res.send(None, None, StatusCode::InternalServerError); }
+                                _ => {
+                                    res.send(None, None, StatusCode::InternalServerError);
+                                }
                             }
                         }
                         _ => {

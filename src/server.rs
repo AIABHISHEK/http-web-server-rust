@@ -39,10 +39,15 @@ fn handle_connection(stream: TcpStream) {
                 let req_headers = req.headers.clone();
                 let mut res = HttpResponse::new(StatusCode::Ok, req_headers, None, res_stream);
                 // println!("hjdhahdahhawdwajd");
-                route_handler(&mut req, &mut res);
                 if req.headers.get("Connection") == Some(&"close".to_string()) {
                     break;
                 }
+                if req.headers.contains_key("Connection") {
+                    
+                }
+                route_handler(&mut req, &mut res);
+                
+                
             }
             Err(e) => {
                 break;
