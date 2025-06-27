@@ -1,15 +1,14 @@
 use std::collections::HashMap;
 use std::io::Write;
 use std::io::{BufReader, Read};
-use std::path;
-use std::{env, fs};
+use std::fs;
 
 use crate::lib::{HttpMethod, StatusCode};
 use crate::req::HttpRequest;
 use crate::res::HttpResponse;
 use crate::util::get_directory;
+
 pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
-    // println!("{}", req.target);
     let mut headers = HashMap::new();
     if req.headers.get("Accept-Encoding") == Some(&"gzip".to_string()) {
         headers.insert("Content-Encoding".to_string(), "gzip".to_string());
@@ -52,7 +51,6 @@ pub fn route_handler(req: &mut HttpRequest, res: &mut HttpResponse) {
             let mut dir = get_directory();
             let file_path = &path["/files/".len()..path.len()];
             let file_path = dir.join(file_path);
-            // println!("{:?}", file_path);
             match req.method {
                 HttpMethod::GET => {
                     let file = fs::File::open(file_path);

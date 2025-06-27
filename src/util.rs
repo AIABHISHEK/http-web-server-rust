@@ -1,10 +1,10 @@
 use std::{
-    collections::HashMap, env, f32::consts::E, io::{BufRead, BufReader, Read}, net::TcpStream, path::PathBuf
+    collections::HashMap, env, io::{BufRead, BufReader, Read}, net::TcpStream, path::PathBuf
 };
 
 use anyhow::{anyhow, Error};
 
-use crate::{lib::HttpMethod, req::{self, HttpRequest}};
+use crate::{lib::HttpMethod, req::HttpRequest};
 
 pub fn parse_incoming_req(mut stream: TcpStream) -> Result<HttpRequest, Error> {
     let mut buf_reader = BufReader::new(&mut stream);
@@ -42,10 +42,8 @@ pub fn parse_incoming_req(mut stream: TcpStream) -> Result<HttpRequest, Error> {
             let mut buf = vec![0; len];
             buf_reader.read_exact(&mut buf).unwrap();
             body = buf.iter().map(|&b| b.clone() as u8).collect();
-            // let b:Vec<char> = buf.iter().map(|&b| b.clone() as char).collect();
         }
     }
-    println!("end of parsing");
     if request_line.is_empty() {
         return Err(anyhow!("Invalid request"));
     }
@@ -53,11 +51,8 @@ pub fn parse_incoming_req(mut stream: TcpStream) -> Result<HttpRequest, Error> {
     let target = request_line[1].clone();
     let http_version = request_line[2].clone();
     let req = HttpRequest::new(method, target, http_version, headers, body, stream);
-    // return true;
     return Ok(req);
 }
-
-pub fn build_response() {}
 
 pub fn get_directory() -> PathBuf {
     let mut args = env::args();
@@ -73,7 +68,7 @@ pub fn get_directory() -> PathBuf {
             break;
         }
     }
-    // let base_dir = Arc
+
     let dir = directory.expect("Missing --directory argument");
     return dir;
 }

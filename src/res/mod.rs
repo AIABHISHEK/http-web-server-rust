@@ -1,13 +1,9 @@
 use std::{collections::HashMap, io::Write, net::TcpStream};
 
-// use flate2::read::GzDecoder;
 use flate2::write::GzEncoder;
 use flate2::Compression;
 
-use crate::{
-    lib::StatusCode,
-    req::{self, HttpRequest},
-};
+use crate::{ lib::StatusCode };
 
 pub struct HttpResponse {
     pub status_code: StatusCode,
